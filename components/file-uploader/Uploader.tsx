@@ -32,7 +32,7 @@ interface iAppProps {
 }
 
 export function Uploader({ value, onChange }: iAppProps) {
-  const fileUrl = useConstructUrl(value || "");
+  const fileUrl = value ? useConstructUrl(value) : undefined;
   const [fileState, setFileState] = useState<UploaderState>({
     error: false,
     file: null,

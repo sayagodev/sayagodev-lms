@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { APIResponse } from "@/lib/types";
 import { courseSchema, CourseSchemaType } from "@/lib/zodSchema";
 import { request } from "@arcjet/next";
+import { revalidatePath } from "next/cache";
 
 const aj = arcjet
   .withRule(
@@ -75,6 +76,95 @@ export async function editCourse(
     return {
       status: "error",
       message: "Error al actualizar el curso",
+    };
+  }
+}
+
+export async function reorderLessons(
+  chapterId: string,
+  lessons: {
+    id: string;
+    position: number;
+  }[],
+  courseId: string
+): Promise<APIResponse> {
+  await requireAdmin();
+  try {
+    if (!lessons || lessons.length === 0) {
+      return {
+        status: "error",
+        message: "No se proporcionaron lecciones para reordenar",
+      };
+    }
+
+    const updates = lessons.map((lesson) =>
+      prisma.lesson.update({
+        where: {
+          id: lesson.id,
+          chapterId: chapterId,
+        },
+        data: {
+          position: lesson.position,
+        },
+      })
+    );
+
+    await prisma.$transaction(updates);
+
+    revalidatePath(`/admin/courses/${courseId}/edit`);
+
+    return {
+      status: "success",
+      message: "Lecciones reordenadas de forma exitosa",
+    };
+  } catch {
+    return {
+      status: "error",
+      message: "Error al reordenar las lecciones",
+    };
+  }
+}
+
+export async function reorderChapters(
+  courseId: string,
+  chapters: {
+    id: string;
+    position: number;
+  }[]
+): Promise<APIResponse> {
+  await requireAdmin();
+  try {
+    if (!chapters || chapters.length === 0) {
+      return {
+        status: "error",
+        message: "No se proporcionaron capítulos para reordenar",
+      };
+    }
+
+    const updates = chapters.map((chapter) =>
+      prisma.chapter.update({
+        where: {
+          id: chapter.id,
+          courseId: courseId,
+        },
+        data: {
+          position: chapter.position,
+        },
+      })
+    );
+
+    await prisma.$transaction(updates);
+
+    revalidatePath(`/admin/courses/${courseId}/edit`);
+
+    return {
+      status: "success",
+      message: "Capítulos reordenados de forma exitosa",
+    };
+  } catch {
+    return {
+      status: "error",
+      message: "Error al reordenar los capítulos",
     };
   }
 }
