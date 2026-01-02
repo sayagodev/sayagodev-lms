@@ -123,7 +123,7 @@ export function EditCourseForm({ data }: iAppProps) {
             className="w-fit"
             onClick={() => {
               const titleValue = form.getValues("title");
-              const slug = slugify(titleValue);
+              const slug = slugify(titleValue, { lower: true });
               form.setValue("slug", slug, { shouldValidate: true });
             }}
           >
@@ -170,7 +170,11 @@ export function EditCourseForm({ data }: iAppProps) {
             <FormItem className="w-full">
               <FormLabel>Miniatura</FormLabel>
               <FormControl>
-                <Uploader onChange={field.onChange} value={field.value} />
+                <Uploader
+                  onChange={field.onChange}
+                  value={field.value}
+                  fileTypeAccepted="image"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
