@@ -88,13 +88,16 @@ model Verification {
 }
 
 model Course {
-  id               String       @id @default(uuid())
-  title            String
-  description      String
-  fileKey          String
-  price            Int
-  duration         Int
-  level            CourseLevel  @default(Beginner)
+  id          String      @id @default(uuid())
+  title       String
+  description String
+  fileKey     String
+  price       Int
+  duration    Int
+  level       CourseLevel @default(Beginner)
+
+  stripePriceId String @unique
+
   category         String
   smallDescription String
   slug             String       @unique

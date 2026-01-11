@@ -3,6 +3,7 @@
 import { requireAdmin } from "@/app/data/admin/require-admin";
 import arcjet, { fixedWindow } from "@/lib/arcjet";
 import { prisma } from "@/lib/db";
+import { stripe } from "@/lib/stripe";
 import { APIResponse } from "@/lib/types";
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
@@ -36,6 +37,27 @@ export async function deleteCourse(courseId: string): Promise<APIResponse> {
             "Haz sido bloqueado por ser un bot. Si esto es un error, por favor, contacta al soporte.",
         };
       }
+    }
+
+    const course = await prisma.course.findUnique({
+      where: {
+        id: courseId,
+      },
+      select: {
+        stripePriceId: true,
+      },
+    });
+
+    if (!course?.stripePriceId) {
+      throw new Error("Este cursor no tiene asociado un stripe_price");
+    }
+
+    const { product: productId } = await stripe.prices.retrieve(
+      course.stripePriceId
+    );
+
+    if (typeof productId === "string") {
+      await stripe.products.update(productId, { active: false });
     }
 
     await prisma.course.delete({

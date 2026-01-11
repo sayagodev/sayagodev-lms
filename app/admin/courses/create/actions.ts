@@ -6,6 +6,8 @@ import { APIResponse } from "@/lib/types";
 import { courseSchema, CourseSchemaType } from "@/lib/zodSchema";
 import arcjet, { fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
+import { stripe } from "@/lib/stripe";
+import { useConstructUrl } from "@/hooks/use-construct-url";
 
 const aj = arcjet.withRule(
   fixedWindow({
@@ -49,10 +51,22 @@ export async function CreateCourse(
       };
     }
 
+    const imageUrl = useConstructUrl(validation.data.fileKey);
+    const data = await stripe.products.create({
+      images: [imageUrl],
+      name: validation.data.title,
+      description: validation.data.smallDescription,
+      default_price_data: {
+        currency: "usd",
+        unit_amount: validation.data.price * 100,
+      },
+    });
+
     await prisma.course.create({
       data: {
         ...validation.data,
         userId: session?.user.id as string,
+        stripePriceId: data.default_price as string,
       },
     });
 
