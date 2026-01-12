@@ -6,6 +6,7 @@ import { Menubar } from "./Menubar";
 import TextAlign from "@tiptap/extension-text-align";
 import { useState } from "react";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function RichTextEditor({ field }: { field: any }) {
   const [, setRenderKey] = useState(0);
 

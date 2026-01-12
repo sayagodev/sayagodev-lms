@@ -33,7 +33,7 @@ export function LoginForm() {
               "Iniciaste sesión con GitHub, te redirigiremos a la página principal."
             );
           },
-          onError: (error) => {
+          onError: () => {
             toast.error(
               "Error al iniciar sesión con GitHub, intenta nuevamente."
             );

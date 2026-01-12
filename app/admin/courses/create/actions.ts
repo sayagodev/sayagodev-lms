@@ -7,7 +7,7 @@ import { courseSchema, CourseSchemaType } from "@/lib/zodSchema";
 import arcjet, { fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 import { stripe } from "@/lib/stripe";
-import { useConstructUrl } from "@/hooks/use-construct-url";
+import { constructUrl } from "@/hooks/construct-url";
 
 const aj = arcjet.withRule(
   fixedWindow({
@@ -51,7 +51,7 @@ export async function CreateCourse(
       };
     }
 
-    const imageUrl = useConstructUrl(validation.data.fileKey);
+    const imageUrl = constructUrl(validation.data.fileKey);
     const data = await stripe.products.create({
       images: [imageUrl],
       name: validation.data.title,

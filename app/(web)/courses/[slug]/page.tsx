@@ -9,7 +9,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
-import { useConstructUrl } from "@/hooks/use-construct-url";
+import { constructUrl } from "@/hooks/construct-url";
 import {
   IconBook,
   IconCategory,
@@ -29,7 +29,7 @@ type Params = Promise<{ slug: string }>;
 export default async function SlugPage({ params }: { params: Params }) {
   const { slug } = await params;
   const course = await getIndividualCourse(slug);
-  const thumbnailUrl = useConstructUrl(course.fileKey);
+  const thumbnailUrl = constructUrl(course.fileKey);
   const isEnrolled = await checkIfCourseBought(course.id);
 
   return (
@@ -266,7 +266,12 @@ export default async function SlugPage({ params }: { params: Params }) {
                 </ul>
               </div>
               {isEnrolled ? (
-                <Link href={`/dashboard`} className={buttonVariants({className: "w-full"})}>Ver curso</Link>
+                <Link
+                  href={`/dashboard`}
+                  className={buttonVariants({ className: "w-full" })}
+                >
+                  Ver curso
+                </Link>
               ) : (
                 <EnrollmentButton courseId={course.id} />
               )}

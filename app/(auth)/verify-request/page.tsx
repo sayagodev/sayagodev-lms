@@ -18,10 +18,18 @@ import { authClient } from "@/lib/auth-client";
 import { CheckCircleIcon, Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { Suspense, useState, useTransition } from "react";
 import { toast } from "sonner";
 
-export default function VerifyRequestPage() {
+export default function VerifyRequestRoute() {
+  return (
+    <Suspense>
+      <VerifyRequestPage />
+    </Suspense>
+  );
+}
+
+function VerifyRequestPage() {
   const router = useRouter();
   const [otp, setOtp] = useState("");
   const [emailPending, startTransition] = useTransition();

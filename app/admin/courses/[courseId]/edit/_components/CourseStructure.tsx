@@ -54,7 +54,7 @@ interface sortableItemProps {
   className?: string;
   data?: {
     type: "chapter" | "lesson";
-    chapterId?: String; // only relevant for lessons
+    chapterId?: string; // only relevant for lessons
   };
 }
 
