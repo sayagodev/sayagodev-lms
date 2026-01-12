@@ -23,6 +23,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { EnrollmentButton } from "./_components/EnrollmentButton";
 import { buttonVariants } from "@/components/ui/button";
+import { CollapsibleText } from "@/components/general/CollapsibleText";
 
 type Params = Promise<{ slug: string }>;
 
@@ -51,7 +52,7 @@ export default async function SlugPage({ params }: { params: Params }) {
             <h1 className="text-4xl font-bold tracking-tight">
               {course.title}
             </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed line-clamp-2">
+            <p className="text-lg text-muted-foreground leading-relaxed">
               {course.smallDescription}
             </p>
           </div>
@@ -77,7 +78,21 @@ export default async function SlugPage({ params }: { params: Params }) {
             <h2 className="text-3xl font-semibold tracking-tight">
               Descripción del curso
             </h2>
-            <RenderDescription json={JSON.parse(course.description)} />
+            <CollapsibleText
+              preview={
+                <div className="text-muted-foreground line-clamp-6">
+                  <RenderDescription json={JSON.parse(course.description)} />
+                </div>
+              }
+              fullContent={
+                <div className="text-muted-foreground">
+                  <RenderDescription json={JSON.parse(course.description)} />
+                </div>
+              }
+              defaultOpen={false}
+              previewClassName="space-y-2"
+              contentClassName="space-y-2"
+            />
           </div>
         </div>
 
@@ -102,16 +117,16 @@ export default async function SlugPage({ params }: { params: Params }) {
                   <CollapsibleTrigger>
                     <div>
                       <CardContent className="p-6 hover:bg-muted/50 transition-colors">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <p className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+                            <p className="flex size-6 md:size-10 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold shrink-0 text-xs md:text-base">
                               {index + 1}
                             </p>
-                            <div>
-                              <h3 className="text-xl font-semibold text-left">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-lg md:text-xl font-semibold text-left line-clamp-2">
                                 {chapter.title}
                               </h3>
-                              <p className="text-sm text-muted-foreground mt-1 text-left">
+                              <p className="text-xs md:text-sm text-muted-foreground mt-1 text-left">
                                 {chapter.lessons.length}{" "}
                                 {chapter.lessons.length !== 1
                                   ? "lecciones"
@@ -119,14 +134,17 @@ export default async function SlugPage({ params }: { params: Params }) {
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-3">
-                            <Badge variant="outline" className="text-xs">
+                          <div className="flex items-center gap-2 md:gap-3 shrink-0">
+                            <Badge
+                              variant="outline"
+                              className="text-xs hidden sm:inline-flex"
+                            >
                               {chapter.lessons.length}{" "}
                               {chapter.lessons.length !== 1
                                 ? "lecciones"
                                 : "lección"}
                             </Badge>
-                            <IconChevronDown className="size-5 text-muted-foreground" />
+                            <IconChevronDown className="size-5 text-muted-foreground shrink-0" />
                           </div>
                         </div>
                       </CardContent>
@@ -134,20 +152,20 @@ export default async function SlugPage({ params }: { params: Params }) {
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <div className="border-t bg-muted/20">
-                      <div className="p-6 pt-4 space-y-3">
+                      <div className="p-4 md:p-6 pt-3 md:pt-4 space-y-2 md:space-y-3">
                         {chapter.lessons.map((lesson, lessonIndex) => (
                           <div
                             key={lesson.id}
-                            className="flex items-center gap-4 rounded-lg p-3 hover:bg-accent transition-colors group"
+                            className="flex items-center gap-3 md:gap-4 rounded-lg p-2 md:p-3 hover:bg-accent transition-colors group"
                           >
-                            <div className="flex size-8 items-center justify-center rounded-full bg-background border-2 border-primary/20">
-                              <IconPlayerPlay className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                            <div className="flex size-7 md:size-8 items-center justify-center rounded-full bg-background border-2 border-primary/20 shrink-0">
+                              <IconPlayerPlay className="size-3 md:size-4 text-muted-foreground group-hover:text-primary transition-colors" />
                             </div>
-                            <div className="flex-1 ">
-                              <p className="font-medium text-sm">
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm line-clamp-1">
                                 {lesson.title}
                               </p>
-                              <p className="text-xs text-muted-foreground mt-1">
+                              <p className="text-xs text-muted-foreground mt-0.5">
                                 Lección {lessonIndex + 1}
                               </p>
                             </div>
