@@ -56,7 +56,7 @@ function VerifyRequestPage() {
   }
 
   return (
-    <Card className="max-w-[20rem] w-full mx-auto">
+    <Card className="max-w-[20rem] md:max-w-md w-full mx-auto">
       <CardHeader className="text-center">
         <CardTitle className="text-xl">
           Por favor, verifica tu correo electrónico
