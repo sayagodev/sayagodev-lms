@@ -48,7 +48,7 @@ export default function VerifyRequestPage() {
   }
 
   return (
-    <Card className="w-full mx-auto">
+    <Card className="max-w-[20rem] w-full mx-auto">
       <CardHeader className="text-center">
         <CardTitle className="text-xl">
           Por favor, verifica tu correo electrónico

@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function PaymentCancel() {
   return (
     <div className="w-full min-h-screen flex flex-1 justify-center items-center">
-      <Card className="w-[350px]">
+      <Card className="max-w-[20rem] w-full mx-auto">
         <CardContent>
           <div className="w-full flex justify-center">
             <XIcon className="size-12 p-2 bg-red-500/30 text-red-500 rounded-full" />

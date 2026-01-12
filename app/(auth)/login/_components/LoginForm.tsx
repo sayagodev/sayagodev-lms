@@ -66,30 +66,29 @@ export function LoginForm() {
   }
 
   return (
-    <Card>
+    <Card className="w-full max-w-[20rem] md:max-w-md mx-auto min-w-0">
       <CardHeader>
         <CardTitle className="text-xl">¡Bienvenido de vuelta!</CardTitle>
         <CardDescription>
           Ingresa con tu GitHub o Correo Electrónico
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-4">
+      <CardContent className="flex flex-col gap-4 min-w-0">
         <Button
           disabled={githubPending}
-          className="w-full"
+          className="w-full min-w-0"
           variant={"outline"}
           onClick={signInWithGithub}
         >
-          {" "}
           {githubPending ? (
             <>
-              <Loader className="size-4 animate-spin" />
-              <span>Iniciando sesión...</span>
+              <Loader className="size-4 animate-spin shrink-0" />
+              <span className="truncate">Iniciando sesión...</span>
             </>
           ) : (
             <>
-              <GithubIcon className="size-4" />
-              Iniciar sesión con GitHub
+              <GithubIcon className="size-4 shrink-0" />
+              <span className="truncate">Iniciar sesión con GitHub</span>
             </>
           )}
         </Button>
@@ -100,27 +99,35 @@ export function LoginForm() {
           </span>
         </div>
 
-        <div className="grid gap-3">
-          <div className="grid gap-2">
+        <div className="grid gap-3 min-w-0">
+          <div className="grid gap-2 min-w-0">
             <Label htmlFor="email">Correo Electrónico</Label>
             <Input
               type="email"
-              placeholder="m@example.com"
+              placeholder="mi@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="w-full min-w-0"
             />
           </div>
-          <Button onClick={signInWithEmail} disabled={emailPending}>
+          <Button
+            onClick={signInWithEmail}
+            disabled={emailPending}
+            className="w-full min-w-0"
+          >
             {emailPending ? (
               <>
-                <Loader2 className="size-4 animate-spin" />
-                <span>Enviando código de verificación...</span>
+                <Loader2 className="size-4 animate-spin shrink-0" />
+                <span className="truncate">Enviando código...</span>
               </>
             ) : (
               <>
-                <SendIcon className="size-4" />
-                <span>Continuar con Correo Electrónico</span>
+                <SendIcon className="size-4 shrink-0" />
+                <span className="truncate md:hidden">Continuar</span>
+                <span className="hidden md:inline truncate">
+                  Continuar con Correo Electrónico
+                </span>
               </>
             )}
           </Button>

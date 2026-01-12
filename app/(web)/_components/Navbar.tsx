@@ -87,20 +87,15 @@ export function Navbar() {
               }
             />
           ) : (
-            <>
-              <Link
-                href="/login"
-                className={buttonVariants({
-                  variant: "secondary",
-                  size: "sm",
-                })}
-              >
-                Login
-              </Link>
-              <Link href="/login" className={buttonVariants({ size: "sm" })}>
-                Comenzar
-              </Link>
-            </>
+            <Link
+              href="/login"
+              className={buttonVariants({
+                variant: "default",
+                size: "sm",
+              })}
+            >
+              Login
+            </Link>
           )}
         </nav>
       </div>

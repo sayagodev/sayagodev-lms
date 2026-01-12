@@ -1,15 +1,15 @@
+import { EmptyState } from "@/components/general/EmptyState";
 import { ChartAreaInteractive } from "@/components/sidebar/chart-area-interactive";
 import { SectionCards } from "@/components/sidebar/section-cards";
-import { adminGetEnrollmentStats } from "../data/admin/admin-get-enrollment-stats";
-import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import Link from "next/link";
+import { Suspense } from "react";
+import { adminGetEnrollmentStats } from "../data/admin/admin-get-enrollment-stats";
 import { adminGetRecentCourses } from "../data/admin/admin-get-recent-courses";
-import { EmptyState } from "@/components/general/EmptyState";
 import {
   AdminCourseCard,
   AdminCourseCardSkeleton,
 } from "./courses/_components/AdminCourseCard";
-import { Suspense } from "react";
 
 export default async function AdminIndexPage() {
   const enrollmentData = await adminGetEnrollmentStats();
