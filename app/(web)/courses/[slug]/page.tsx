@@ -24,8 +24,30 @@ import Link from "next/link";
 import { EnrollmentButton } from "./_components/EnrollmentButton";
 import { buttonVariants } from "@/components/ui/button";
 import { CollapsibleText } from "@/components/general/CollapsibleText";
+import { generateMetadata as createMetadata } from "@/lib/metadata";
 
 type Params = Promise<{ slug: string }>;
+
+export async function generateMetadata({ params }: { params: Params }) {
+  const { slug } = await params;
+  const course = await getIndividualCourse(slug);
+  const thumbnailUrl = constructUrl(course.fileKey);
+
+  return createMetadata({
+    title: course.title,
+    description:
+      course.smallDescription || course.description.substring(0, 160),
+    image: thumbnailUrl,
+    url: `/courses/${slug}`,
+    type: "article",
+    keywords: [
+      course.category.toLowerCase(),
+      course.level.toLowerCase(),
+      "curso online",
+      "aprendizaje",
+    ],
+  });
+}
 
 export default async function SlugPage({ params }: { params: Params }) {
   const { slug } = await params;

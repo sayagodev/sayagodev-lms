@@ -1,8 +1,26 @@
 import { getCourseSidebarData } from "@/app/data/course/get-course-sidebar-data";
+import { generateMetadata as createMetadata } from "@/lib/metadata";
 import { redirect } from "next/navigation";
+import { constructUrl } from "@/hooks/construct-url";
 
 interface iAppProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: iAppProps): Promise<ReturnType<typeof createMetadata>> {
+  const { slug } = await params;
+  const course = await getCourseSidebarData(slug);
+  const thumbnailUrl = constructUrl(course.course.fileKey);
+
+  return createMetadata({
+    title: course.course.title,
+    description: `Accede al curso ${course.course.title} y continúa tu aprendizaje`,
+    image: thumbnailUrl,
+    url: `/dashboard/${slug}`,
+    noindex: true,
+  });
 }
 
 export default async function CourseSlugRoute({ params }: iAppProps) {

@@ -1,9 +1,17 @@
 import { EmptyState } from "@/components/general/EmptyState";
+import { PublicCourseCard } from "../(web)/_components/PublicCourseCard";
 import { getAllCourses } from "../data/course/get-all-courses";
 import { getEnrolledCourses } from "../data/user/get-enrolled-courses";
-import { PublicCourseCard } from "../(web)/_components/PublicCourseCard";
-import Link from "next/link";
 import { CourseProgressCard } from "./_components/CourseProgressCard";
+import { generateMetadata } from "@/lib/metadata";
+
+export const metadata = generateMetadata({
+  title: "Mi Dashboard",
+  description:
+    "Accede a tus cursos inscritos y gestiona tu progreso de aprendizaje. Continúa donde lo dejaste y alcanza tus objetivos educativos.",
+  url: "/dashboard",
+  noindex: true, // No indexar páginas privadas
+});
 
 export default async function DashbordPage() {
   const [courses, enrolledCourses] = await Promise.all([

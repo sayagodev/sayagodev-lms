@@ -4,6 +4,21 @@ import {
   PublicCourseCard,
   PublicCourseCardSkeleton,
 } from "../_components/PublicCourseCard";
+import { generateMetadata } from "@/lib/metadata";
+
+export const metadata = generateMetadata({
+  title: "Explorar Cursos",
+  description:
+    "Descubre una amplia gama de cursos en línea diseñados para principiantes y expertos. Aprende nuevas habilidades y avanza en tu carrera profesional.",
+  keywords: [
+    "cursos",
+    "cursos online",
+    "aprendizaje",
+    "educación online",
+    "capacitación profesional",
+  ],
+  url: "/courses",
+});
 
 export const dynamic = "force-dynamic";
 
