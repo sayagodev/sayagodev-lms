@@ -7,6 +7,7 @@ import { stripe } from "@/lib/stripe";
 import { APIResponse } from "@/lib/types";
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
+import { deleteS3Files } from "@/lib/s3-utils";
 
 const aj = arcjet.withRule(
   fixedWindow({
@@ -45,6 +46,17 @@ export async function deleteCourse(courseId: string): Promise<APIResponse> {
       },
       select: {
         stripePriceId: true,
+        fileKey: true,
+        chapters: {
+          select: {
+            lessons: {
+              select: {
+                thumbnailKey: true,
+                videoKey: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -60,11 +72,25 @@ export async function deleteCourse(courseId: string): Promise<APIResponse> {
       await stripe.products.update(productId, { active: false });
     }
 
+    // Recopilar todas las claves de archivos a eliminar
+    const filesToDelete: (string | null | undefined)[] = [course.fileKey];
+
+    course.chapters.forEach((chapter) => {
+      chapter.lessons.forEach((lesson) => {
+        filesToDelete.push(lesson.thumbnailKey);
+        filesToDelete.push(lesson.videoKey);
+      });
+    });
+
+    // Eliminar el curso de la base de datos
     await prisma.course.delete({
       where: {
         id: courseId,
       },
     });
+
+    // Eliminar archivos de S3 después de eliminar de la base de datos
+    await deleteS3Files(filesToDelete);
 
     revalidatePath(`/admin/courses/`);
 

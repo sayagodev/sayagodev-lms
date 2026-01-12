@@ -14,6 +14,7 @@ import {
 } from "@/lib/zodSchema";
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
+import { deleteS3File, deleteS3Files } from "@/lib/s3-utils";
 
 const aj = arcjet.withRule(
   fixedWindow({
@@ -58,6 +59,17 @@ export async function editCourse(
       };
     }
 
+    // Obtener el curso actual para comparar fileKey
+    const currentCourse = await prisma.course.findUnique({
+      where: {
+        id: courseId,
+        userId: user.user.id,
+      },
+      select: {
+        fileKey: true,
+      },
+    });
+
     await prisma.course.update({
       where: {
         id: courseId,
@@ -67,6 +79,11 @@ export async function editCourse(
         ...result.data,
       },
     });
+
+    // Eliminar el archivo anterior de S3 si se cambió el fileKey
+    if (currentCourse && currentCourse.fileKey !== result.data.fileKey) {
+      await deleteS3File(currentCourse.fileKey);
+    }
 
     return {
       status: "success",
@@ -298,6 +315,8 @@ export async function deleteLesson({
           select: {
             id: true,
             position: true,
+            thumbnailKey: true,
+            videoKey: true,
           },
         },
       },
@@ -333,6 +352,7 @@ export async function deleteLesson({
       });
     });
 
+    // Eliminar la lección de la base de datos
     await prisma.$transaction([
       ...updates,
       prisma.lesson.delete({
@@ -342,6 +362,9 @@ export async function deleteLesson({
         },
       }),
     ]);
+
+    // Eliminar archivos de S3 después de eliminar de la base de datos
+    await deleteS3Files([lessonToDelete.thumbnailKey, lessonToDelete.videoKey]);
 
     revalidatePath(`/admin/courses/${courseId}/edit`);
 

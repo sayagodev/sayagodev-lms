@@ -4,6 +4,7 @@ import { env } from "@/lib/env";
 import { S3 } from "@/lib/S3Client";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
 const aj = arcjet.withRule(
   fixedWindow({
@@ -41,6 +42,26 @@ export async function DELETE(req: Request) {
     });
 
     await S3.send(command);
+
+    // Eliminar referencias de la base de datos
+    // Buscar en lecciones (thumbnailKey y videoKey)
+    await prisma.lesson.updateMany({
+      where: {
+        OR: [
+          { thumbnailKey: key },
+          { videoKey: key },
+        ],
+      },
+      data: {
+        thumbnailKey: null,
+        videoKey: null,
+      },
+    });
+
+    // Nota: fileKey en Course es requerido (String no nullable),
+    // por lo que no podemos eliminarlo directamente.
+    // Si necesitas eliminar fileKey de cursos, considera cambiar el schema
+    // o manejar esto de manera diferente.
 
     return NextResponse.json(
       { message: "Object deleted successfully" },

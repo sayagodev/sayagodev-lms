@@ -18,6 +18,10 @@ interface iAppProps {
 export function CourseContent({ data }: iAppProps) {
   const [pending, startTransition] = useTransition();
   const { triggerConfetti } = useConfetti();
+  
+  // Manejar el caso cuando no hay progreso registrado
+  const lessonProgress = data.lessonProgress[0];
+  const isCompleted = lessonProgress?.completed ?? false;
 
   function VideoPlayer({
     thumbnailKey,
@@ -70,7 +74,7 @@ export function CourseContent({ data }: iAppProps) {
 
       if (result.status === "success") {
         toast.success(result.message);
-        if (!data.lessonProgress[0].completed) {
+        if (!isCompleted) {
           triggerConfetti();
         }
       } else if (result.status === "error") {
@@ -85,7 +89,7 @@ export function CourseContent({ data }: iAppProps) {
         videoKey={data.videoKey ?? ""}
       />
       <div className="py-4 border-b">
-        {data.lessonProgress[0].completed ? (
+        {isCompleted ? (
           <Button
             variant="outline"
             className="bg-green-500/10 text-green-500 hover:text-green-600"
