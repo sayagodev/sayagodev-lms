@@ -1,5 +1,7 @@
 "use client";
 
+import { Uploader } from "@/components/file-uploader/Uploader";
+import { RichTextEditor } from "@/components/rich-text-editor/Editor";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -9,17 +11,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  courseCategories,
-  courseLevels,
-  courseSchema,
-  CourseSchemaType,
-  courseStatus,
-} from "@/lib/zodSchema";
-import { ArrowLeft, Loader2, PlusIcon, SparkleIcon } from "lucide-react";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
   Form,
   FormControl,
   FormField,
@@ -28,8 +19,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import slugify from "slugify";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -37,26 +26,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RichTextEditor } from "@/components/rich-text-editor/Editor";
-import { Uploader } from "@/components/file-uploader/Uploader";
-import { useTransition } from "react";
+import { Textarea } from "@/components/ui/textarea";
 import { tryCatch } from "@/hooks/try-catch";
-import { CreateCourse } from "./actions";
-import { toast } from "sonner";
-import { redirect, useRouter } from "next/navigation";
 import { useConfetti } from "@/hooks/use-confetti";
 import { authClient } from "@/lib/auth-client";
+import {
+  courseCategories,
+  courseLevels,
+  courseSchema,
+  CourseSchemaType,
+  courseStatus,
+} from "@/lib/zodSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeft, Loader2, PlusIcon, SparkleIcon } from "lucide-react";
+import Link from "next/link";
+import { redirect, useRouter } from "next/navigation";
+import { cache, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import slugify from "slugify";
+import { toast } from "sonner";
+import { CreateCourse } from "./actions";
 
-export default async function CourseCreationPage() {
-  const [pending, startTransition] = useTransition();
-  const router = useRouter();
-  const { triggerConfetti } = useConfetti();
-
+const getSession = cache(async () => {
   const session = await authClient.getSession();
 
   if (session?.data?.user?.role !== "admin") {
     redirect("/not-admin");
   }
+
+  return;
+});
+
+export default function CourseCreationPage() {
+  const [pending, startTransition] = useTransition();
+  const router = useRouter();
+  const { triggerConfetti } = useConfetti();
+
+  getSession();
 
   const form = useForm({
     resolver: zodResolver(courseSchema),
