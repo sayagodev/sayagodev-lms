@@ -52,13 +52,13 @@ export async function CreateCourse(
     }
 
     let imageUrl: string | undefined;
-    if (validation.data.fileKey && validation.data.fileKey.trim() !== "") {
-      const constructedUrl = constructUrl(validation.data.fileKey);
+    if (validation.data.fileKey?.trim()) {
       try {
+        const constructedUrl = constructUrl(validation.data.fileKey.trim());
         new URL(constructedUrl);
         imageUrl = constructedUrl;
       } catch {
-        console.error("URL de imagen inválida:", constructedUrl);
+        // URL inválida, no se incluirá
       }
     }
 
@@ -79,7 +79,6 @@ export async function CreateCourse(
       },
     };
 
-    // Solo incluir images si tenemos una URL válida
     if (imageUrl) {
       productData.images = [imageUrl];
     }
