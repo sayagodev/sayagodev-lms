@@ -51,16 +51,40 @@ export async function CreateCourse(
       };
     }
 
-    const imageUrl = constructUrl(validation.data.fileKey);
-    const data = await stripe.products.create({
-      images: [imageUrl],
+    let imageUrl: string | undefined;
+    if (validation.data.fileKey && validation.data.fileKey.trim() !== "") {
+      const constructedUrl = constructUrl(validation.data.fileKey);
+      try {
+        new URL(constructedUrl);
+        imageUrl = constructedUrl;
+      } catch {
+        console.error("URL de imagen inválida:", constructedUrl);
+      }
+    }
+
+    const productData: {
+      name: string;
+      description: string;
+      default_price_data: {
+        currency: string;
+        unit_amount: number;
+      };
+      images?: string[];
+    } = {
       name: validation.data.title,
       description: validation.data.smallDescription,
       default_price_data: {
         currency: "usd",
         unit_amount: validation.data.price * 100,
       },
-    });
+    };
+
+    // Solo incluir images si tenemos una URL válida
+    if (imageUrl) {
+      productData.images = [imageUrl];
+    }
+
+    const data = await stripe.products.create(productData);
 
     await prisma.course.create({
       data: {
@@ -74,11 +98,25 @@ export async function CreateCourse(
       status: "success",
       message: "Curso creado correctamente",
     };
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.error("Error al crear el curso:", error);
+
+    if (error?.type === "StripeInvalidRequestError") {
+      if (error?.code === "url_invalid") {
+        return {
+          status: "error",
+          message: "La URL de la imagen no es válida. Por favor, verifica que la imagen se haya subido correctamente.",
+        };
+      }
+      return {
+        status: "error",
+        message: `Error de Stripe: ${error.message || "Error al crear el producto"}`,
+      };
+    }
+
     return {
       status: "error",
-      message: "Error al crear el curso",
+      message: error?.message || "Error al crear el curso. Por favor, inténtalo de nuevo.",
     };
   }
 }

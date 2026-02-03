@@ -8,6 +8,7 @@ import { stripe } from "@/lib/stripe";
 import { APIResponse } from "@/lib/types";
 import { request } from "@arcjet/next";
 import { redirect } from "next/navigation";
+import { randomUUID } from "node:crypto";
 import Stripe from "stripe";
 
 const aj = arcjet.withRule(
@@ -72,12 +73,15 @@ export async function enrollInCourseAction(
     if (userWithStripeCustomerId?.stripeCustomerId) {
       stripeCustomerId = userWithStripeCustomerId.stripeCustomerId;
     } else {
+      const customerIdempotencyKey = `customer-${user.id}`
       const customer = await stripe.customers.create({
         email: user.email,
         name: user.name,
         metadata: {
           userId: user.id,
         },
+      }, {
+        idempotencyKey: customerIdempotencyKey,
       });
 
       stripeCustomerId = customer.id;
@@ -137,6 +141,12 @@ export async function enrollInCourseAction(
         });
       }
 
+      const idempotencyKey = `checkout-${user.id}-${courseId}-${enrollment.id}`
+
+      // Log temporal para debugging
+      console.log('🔑 Idempotency Key:', idempotencyKey);
+      console.log('📝 Enrollment ID:', enrollment.id);
+
       const checkoutSession = await stripe.checkout.sessions.create({
         customer: stripeCustomerId,
         line_items: [
@@ -153,6 +163,8 @@ export async function enrollInCourseAction(
           courseId: courseId,
           enrollmentId: enrollment.id,
         },
+      }, {
+        idempotencyKey: idempotencyKey,
       });
 
       return {
