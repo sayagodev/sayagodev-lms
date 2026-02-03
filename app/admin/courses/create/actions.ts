@@ -98,25 +98,12 @@ export async function CreateCourse(
       status: "success",
       message: "Curso creado correctamente",
     };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error al crear el curso:", error);
-
-    if (error?.type === "StripeInvalidRequestError") {
-      if (error?.code === "url_invalid") {
-        return {
-          status: "error",
-          message: "La URL de la imagen no es válida. Por favor, verifica que la imagen se haya subido correctamente.",
-        };
-      }
-      return {
-        status: "error",
-        message: `Error de Stripe: ${error.message || "Error al crear el producto"}`,
-      };
-    }
 
     return {
       status: "error",
-      message: error?.message || "Error al crear el curso. Por favor, inténtalo de nuevo.",
+      message: "Error al crear el curso. Por favor, inténtalo de nuevo.",
     };
   }
 }
